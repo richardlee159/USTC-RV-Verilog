@@ -4,18 +4,18 @@
 module regfile #(
     parameter ADDRW = 5,
     parameter DATAW = 32
-)(
+) (
     input                clk,
-    input                wr_en,
-    input   [ADDRW-1:0]  addr_d,
-    input   [ADDRW-1:0]  addr_a,
-    input   [ADDRW-1:0]  addr_b,
-    input   [DATAW-1:0]  data_d,
-    output  [DATAW-1:0]  data_a,
-    output  [DATAW-1:0]  data_b
+    input                wr_en,         // write enable
+    input   [ADDRW-1:0]  addr_d,        // write port address
+    input   [ADDRW-1:0]  addr_a,        // read port A address
+    input   [ADDRW-1:0]  addr_b,        // read port B address
+    input   [DATAW-1:0]  data_d,        // write port data
+    output  [DATAW-1:0]  data_a,        // read port A data
+    output  [DATAW-1:0]  data_b         // read port B data
 );
 
-parameter REGCOUNT = 1 << ADDRW;
+parameter REGCOUNT = 1 << ADDRW;        // number of registers
 reg [DATAW-1:0] regs [1:REGCOUNT-1];
 
 // asynchronous read

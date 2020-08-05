@@ -7,9 +7,18 @@ module regfile_tb;
     reg [31:0] data_d;
     wire [31:0] data_a, data_b;
     
-    parameter PERIOD = 10, CYCLE = 64;
+    localparam PERIOD = 10, CYCLE = 64;
     
-    regfile regfile_0(clk,wr_en,addr_d,addr_a,addr_b,data_d,data_a,data_b);
+    regfile regfile_0(
+        .clk    (clk),
+        .wr_en  (wr_en),
+        .addr_d (addr_d),
+        .addr_a (addr_a),
+        .addr_b (addr_b),
+        .data_d (data_d),
+        .data_a (data_a),
+        .data_b (data_b)
+    );
     
     initial begin
         clk = 0;
@@ -19,11 +28,14 @@ module regfile_tb;
     end
     
     initial begin
-        addr_d = 0; wr_en = 1;
-        addr_a = 5; addr_b = 10;
+        wr_en = 1;
+        addr_d = 0;
+        addr_a = 5;
+        addr_b = 10;
         repeat (32) begin
             data_d = addr_d * addr_d + 1;
-            #PERIOD addr_d = addr_d + 1;
+            #PERIOD
+            addr_d = addr_d + 1;
         end
         wr_en = 0;
         repeat (32) begin
