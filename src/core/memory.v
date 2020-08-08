@@ -54,28 +54,28 @@ ram #(
     .DATAW (8       )
 )
 ram_blk_0(
-	.clk   (clk             ),
+    .clk   (clk             ),
     .we    (we & byte_en[0] ),
     .addr  (addr[ADDRW-1:2] ),
     .wdata (blk_wdata[7:0]  ),
     .rdata (blk_rdata[7:0]  )
 ),
 ram_blk_1(
-	.clk   (clk             ),
+    .clk   (clk             ),
     .we    (we & byte_en[1] ),
     .addr  (addr[ADDRW-1:2] ),
     .wdata (blk_wdata[15:8] ),
     .rdata (blk_rdata[15:8] )
 ),
 ram_blk_2(
-	.clk   (clk             ),
+    .clk   (clk             ),
     .we    (we & byte_en[2] ),
     .addr  (addr[ADDRW-1:2] ),
     .wdata (blk_wdata[23:16]),
     .rdata (blk_rdata[23:16])
 ),
 ram_blk_3(
-	.clk   (clk             ),
+    .clk   (clk             ),
     .we    (we & byte_en[3] ),
     .addr  (addr[ADDRW-1:2] ),
     .wdata (blk_wdata[31:24]),

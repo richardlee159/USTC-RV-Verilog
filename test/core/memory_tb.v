@@ -18,7 +18,7 @@ memory
     .ADDRW (ADDRW)
 )
 memory0(
-	.clk    (clk    ),
+    .clk    (clk    ),
     .we     (we     ),
     .sign   (sign   ),
     .length (length ),
