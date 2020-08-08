@@ -1,8 +1,8 @@
-`define IMM_I 3'd0
-`define IMM_S 3'd1
-`define IMM_B 3'd2
-`define IMM_U 3'd3
-`define IMM_J 3'd4
+`define     IMM_I       3'd0
+`define     IMM_S       3'd1
+`define     IMM_B       3'd2
+`define     IMM_U       3'd3
+`define     IMM_J       3'd4
 
 module immgen (
     input   [2:0]   sel,

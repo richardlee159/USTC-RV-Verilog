@@ -4,9 +4,9 @@
 
 `include "src/core/ram.v"
 
-`define LEN_BYTE 2'b00
-`define LEN_HALF 2'b01
-`define LEN_WORD 2'b10
+`define     LEN_BYTE    2'b00
+`define     LEN_HALF    2'b01
+`define     LEN_WORD    2'b10
 
 module memory #(
     parameter ADDRW = 12
