@@ -2,8 +2,8 @@
 `define __MACRO_V
 
 // -------- Universal ---------
-`define     N           1'b0
-`define     Y           1'b1
+// `define     N           1'b0
+// `define     Y           1'b1
 
 `define     DTCARE      'bx
 // DTCARE is used to represent Don't Care Term
@@ -13,6 +13,21 @@
 
 // ----------------------------
 
+
+// --------- Control ----------
+`define     A_RS1       1'b0
+`define     A_PC        1'b1
+
+`define     B_RS2       1'b0
+`define     B_IMM       1'b1
+
+`define     WB_DM       2'b00
+`define     WB_ALU      2'b01
+`define     WB_PC4      2'b10
+
+`define     PC_PC4      1'b0
+`define     PC_ALU      1'b1
+// ----------------------------
 
 
 // -------- Imm Gen -----------
