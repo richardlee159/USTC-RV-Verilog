@@ -34,6 +34,7 @@ always @(*) begin
         `ALU_SRA  : out_r = a_s >>> shamt;
         `ALU_OR   : out_r = a | b;
         `ALU_AND  : out_r = a & b;
+        `ALU_PASSB: out_r = b;
         default   : out_r = 'b0;
     endcase
 end

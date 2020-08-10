@@ -35,6 +35,8 @@
 `define     ALU_SRA     4'b1101
 `define     ALU_OR      4'b0110
 `define     ALU_AND     4'b0111
+
+`define     ALU_PASSB   4'b1111
 // ----------------------------
 
 
