@@ -3,10 +3,8 @@
 // Need to generate exception for unaligned access
 
 `include "src/core/ram.v"
+`include "src/core/macro.v"
 
-`define     LEN_BYTE    2'b00
-`define     LEN_HALF    2'b01
-`define     LEN_WORD    2'b10
 
 module memory #(
     parameter ADDRW = 12
@@ -29,10 +27,10 @@ assign bit_offset = byte_offset << 3;
 reg [3:0] byte_en;
 always @(*) begin
     case(length)
-        `LEN_BYTE   : byte_en = 4'b0001 << byte_offset;
-        `LEN_HALF   : byte_en = 4'b0011 << byte_offset;
-        `LEN_WORD   : byte_en = 4'b1111;
-        default     : byte_en = 4'b0000;
+        `ML_BYTE : byte_en = 4'b0001 << byte_offset;
+        `ML_HALF : byte_en = 4'b0011 << byte_offset;
+        `ML_WORD : byte_en = 4'b1111;
+        default  : byte_en = 4'b0000;
     endcase
 end
 
@@ -42,10 +40,10 @@ wire [31:0] blk_rdata;
 assign blk_wdata = wdata << bit_offset;
 // always @(*) begin
 //     case (length)
-//         `LEN_BYTE   : blk_wdata = {4{wdata[ 7:0]}};
-//         `LEN_HALF   : blk_wdata = {2{wdata[15:0]}};
-//         `LEN_WORD   : blk_wdata = wdata;
-//         default     : blk_wdata = 32'b0;
+//         `ML_BYTE : blk_wdata = {4{wdata[ 7:0]}};
+//         `ML_HALF : blk_wdata = {2{wdata[15:0]}};
+//         `ML_WORD : blk_wdata = wdata;
+//         default  : blk_wdata = 32'b0;
 //     endcase
 // end
 
@@ -92,10 +90,10 @@ reg [31:0] rdata_r;
 assign rdata = rdata_r;
 always @(*) begin
     case (length)
-        `LEN_BYTE   : rdata_r = sign ? sb : ub;
-        `LEN_HALF   : rdata_r = sign ? sh : uh;
-        `LEN_WORD   : rdata_r = blk_rdata;
-        default     : rdata_r = 32'b0;
+        `ML_BYTE : rdata_r = sign ? sb : ub;
+        `ML_HALF : rdata_r = sign ? sh : uh;
+        `ML_WORD : rdata_r = blk_rdata;
+        default  : rdata_r = 32'b0;
     endcase
 end
 

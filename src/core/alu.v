@@ -1,13 +1,4 @@
-`define     ALU_ADD    'b0000
-`define     ALU_SUB    'b1000
-`define     ALU_SLL    'b0001
-`define     ALU_SLT    'b0010
-`define     ALU_SLTU   'b0011
-`define     ALU_XOR    'b0100
-`define     ALU_SRL    'b0101
-`define     ALU_SRA    'b1101
-`define     ALU_OR     'b0110
-`define     ALU_AND    'b0111
+`include "src/core/macro.v"
 
 module alu #(
     parameter DATAW = 32

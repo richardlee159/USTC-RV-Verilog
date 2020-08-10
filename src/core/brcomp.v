@@ -1,9 +1,4 @@
-`define     BR_EQ       3'b000
-`define     BR_NE       3'b001
-`define     BR_LT       3'b100
-`define     BR_GE       3'b101
-`define     BR_LTU      3'b110
-`define     BR_GEU      3'b111
+`include "src/core/macro.v"
 
 module brcomp #(
     parameter DATAW = 32
