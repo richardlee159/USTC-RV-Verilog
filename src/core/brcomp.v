@@ -3,7 +3,7 @@
 module brcomp #(
     parameter DATAW = 32
 ) (
-    input [2:0] type,
+    input [2:0] funct3,
     input [DATAW-1:0] a,
     input [DATAW-1:0] b,
     output taken
@@ -18,7 +18,7 @@ reg taken_r;
 assign taken = taken_r;
 
 always @(*) begin
-    case (type)
+    case (funct3)
         `BR_EQ  : taken_r = (a == b);
         `BR_NE  : taken_r = (a != b);
         `BR_LT  : taken_r = (a_s <  b_s);
