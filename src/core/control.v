@@ -32,14 +32,6 @@ assign ctrls = {pc_sel, reg_wen, a_sel, b_sel, mem_rw,
                 wb_sel, imm_sel, alu_sel};
 
 // generation of control signals
-
-// WARNING: IMPORTANT !!!
-// To simplify the code and logic, the implementation of some signals
-// (e.g. br_sel) and relevant macros take advantage of specific encoding
-// of instructions. These signals are marked with ** in the comments.
-// If the definition of relevant macros (e.g. BR_XXX) is changed, the
-// control logic needs to be adjusted accordingly.
-
 always @(*) begin
     // pc_sel
     case(opcode)
@@ -134,10 +126,15 @@ always @(*) begin
         OP_BRANCH : alu_sel = `ALU_ADD;
         OP_LOAD   : alu_sel = `ALU_ADD;
         OP_STORE  : alu_sel = `ALU_ADD;
-        OP_ALI    : alu_sel = {  1'b0   , funct3};
+        OP_ALI    : alu_sel = {funct3==3'b101 ? funct7[5] : 1'b0, funct3};
         OP_ALR    : alu_sel = {funct7[5], funct3};
         default   : alu_sel = `DTCARE;
     endcase
+    // WARNING: IMPORTANT !!!
+    // To simplify the code and logic, the implementation of alu_sel take
+    // advantage of the specific encoding of arithmetic-logic instructions.
+    // If the definition of relevant macros (ALU_XXX) is changed, the
+    // control logic needs to be adjusted accordingly.
 
 end
 
