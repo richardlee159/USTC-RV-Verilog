@@ -61,8 +61,8 @@ reg [31:0] rdata_r;
 assign rdata = rdata_r;
 always @(*) begin
     case (length)
-        `ML_BYTE : rdata_r = sign ? sb : ub;
-        `ML_HALF : rdata_r = sign ? sh : uh;
+        `ML_BYTE : rdata_r = (sign == `MS_SIGN) ? sb : ub;
+        `ML_HALF : rdata_r = (sign == `MS_SIGN) ? sh : uh;
         `ML_WORD : rdata_r = ram_rdata;
         default  : rdata_r = 32'b0;
     endcase

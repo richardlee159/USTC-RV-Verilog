@@ -71,9 +71,12 @@
 `define     M_READ      1'b0
 `define     M_WRITE     1'b1
 
-`define     ML_BYTE    2'b00
-`define     ML_HALF    2'b01
-`define     ML_WORD    2'b10
+`define     MS_SIGN     1'b0
+`define     MS_UNSIGN   1'b1
+
+`define     ML_BYTE     2'b00
+`define     ML_HALF     2'b01
+`define     ML_WORD     2'b10
 // ----------------------------
 
 `endif
