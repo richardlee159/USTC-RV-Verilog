@@ -13,6 +13,8 @@ reg  [ADDRW-1:0] addr;
 reg  [31:0]      wdata;
 wire [31:0]      rdata;
 
+wire [2:0] funct3 = {sign, length};
+
 memory 
 #(
     .ADDRW (ADDRW)
@@ -20,8 +22,7 @@ memory
 memory0(
     .clk    (clk    ),
     .we     (we     ),
-    .sign   (sign   ),
-    .length (length ),
+    .funct3 (funct3 ),
     .addr   (addr   ),
     .wdata  (wdata  ),
     .rdata  (rdata  )
@@ -37,27 +38,31 @@ end
 initial begin
     we = 1;
     sign = 1;
-    length = `LEN_WORD;
+    length = `ML_WORD;
     addr = 10'd0;
     wdata = 32'hA74D2F93;
 
     #CLK_PERIOD
-    length = `LEN_BYTE;
+    length = `ML_BYTE;
     addr = 10'd5;
     wdata = 32'h86;
 
     #CLK_PERIOD
     we = 0;
+    length = `ML_WORD;
+
+    #CLK_PERIOD
     addr = 10'd0;
+    length = `ML_BYTE;
     
     #CLK_PERIOD
     sign = 0;
 
     #CLK_PERIOD
-    length = `LEN_HALF;
+    length = `ML_HALF;
 
     #CLK_PERIOD
-    length = `LEN_WORD;
+    length = `ML_WORD;
 
     #CLK_PERIOD
     $finish;

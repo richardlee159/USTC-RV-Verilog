@@ -2,6 +2,8 @@
 `define __MACRO_V
 
 // -------- Universal ---------
+`define     BYTEW       8
+
 // `define     N           1'b0
 // `define     Y           1'b1
 

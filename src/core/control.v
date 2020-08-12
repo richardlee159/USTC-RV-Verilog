@@ -5,7 +5,7 @@ module control (
     input   [2:0]   funct3,
     input   [6:0]   funct7,
     input           brtaken,
-    output  [19:0]  ctrls
+    output  [16:0]  ctrls
 );
 
 // opcode patterns
@@ -24,15 +24,13 @@ reg         reg_wen;
 reg         a_sel;
 reg         b_sel;
 reg         mem_rw;
-reg         mem_sign;
-reg [1:0]   mem_len;
 reg [1:0]   wb_sel;
 reg [2:0]   br_sel;
 reg [2:0]   imm_sel;
 reg [3:0]   alu_sel;
 
-assign ctrls = {pc_sel, reg_wen, a_sel, b_sel, mem_rw, mem_sign,
-                mem_len, wb_sel, br_sel, imm_sel, alu_sel};
+assign ctrls = {pc_sel, reg_wen, a_sel, b_sel, mem_rw,
+                wb_sel, br_sel, imm_sel, alu_sel};
 
 // generation of control signals
 
@@ -141,12 +139,6 @@ always @(*) begin
         OP_ALR    : alu_sel = {funct7[5], funct3};
         default   : alu_sel = `DTCARE;
     endcase
-
-    // mem_sign **
-    mem_sign = funct3[2];
-
-    // mem_len **
-    mem_len  = funct3[1:0];
 
     // br_sel **
     br_sel   = funct3;
