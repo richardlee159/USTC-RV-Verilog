@@ -1,11 +1,13 @@
 `ifndef __MACRO_V
 `define __MACRO_V
 
+`default_nettype none
+
 // -------- Universal ---------
 `define     BYTEW       8
 
-// `define     N           1'b0
-// `define     Y           1'b1
+`define     N           1'b0
+`define     Y           1'b1
 
 `define     DTCARE      'bx
 // DTCARE is used to represent Don't Care Term
@@ -19,13 +21,16 @@
 // --------- Control ----------
 `define     A_RS1       1'b0
 `define     A_PC        1'b1
+`define     A_X         1`DTCARE
 
 `define     B_RS2       1'b0
 `define     B_IMM       1'b1
+`define     B_X         1`DTCARE
 
 `define     WB_DM       2'b00
 `define     WB_ALU      2'b01
 `define     WB_PC4      2'b10
+`define     WB_X        2`DTCARE
 
 `define     PC_PC4      1'b0
 `define     PC_ALU      1'b1
@@ -33,11 +38,12 @@
 
 
 // -------- Imm Gen -----------
-`define     IMM_I       3'd0
-`define     IMM_S       3'd1
-`define     IMM_B       3'd2
-`define     IMM_U       3'd3
-`define     IMM_J       3'd4
+`define     IMM_I       3'b000
+`define     IMM_S       3'b010
+`define     IMM_B       3'b110
+`define     IMM_U       3'b111
+`define     IMM_J       3'b101
+`define     IMM_X       3`DTCARE
 // ----------------------------
 
 
@@ -54,6 +60,7 @@
 `define     ALU_AND     4'b0111
 
 `define     ALU_PASSB   4'b1111
+`define     ALU_X       4`DTCARE
 // ----------------------------
 
 

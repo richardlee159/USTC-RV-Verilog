@@ -1,141 +1,67 @@
 `include "src/core/macro.v"
+`include "src/core/format.vh"
 
 module control (
-    input   [6:0]   opcode,
-    input   [2:0]   funct3,
-    input   [6:0]   funct7,
+    input   [31:0]  inst,
     input           brtaken,
     output  [13:0]  ctrls
 );
 
-// opcode patterns
-localparam  OP_LUI    = 7'b0110111;
-localparam  OP_AUIPC  = 7'b0010111;
-localparam  OP_JAL    = 7'b1101111;
-localparam  OP_JALR   = 7'b1100111;
-localparam  OP_BRANCH = 7'b1100011;
-localparam  OP_LOAD   = 7'b0000011;
-localparam  OP_STORE  = 7'b0100011;
-localparam  OP_ALI    = 7'b0010011;
-localparam  OP_ALR    = 7'b0110011;
+reg [13:0] cr;
+assign ctrls = cr;
 
-reg         pc_sel;
-reg         reg_wen;
-reg         a_sel;
-reg         b_sel;
-reg         mem_rw;
-reg [1:0]   wb_sel;
-reg [2:0]   imm_sel;
-reg [3:0]   alu_sel;
+wire pc_br = brtaken ? `PC_ALU : `PC_PC4;
 
-assign ctrls = {pc_sel, reg_wen, a_sel, b_sel, mem_rw,
-                wb_sel, imm_sel, alu_sel};
-
-// generation of control signals
 always @(*) begin
-    // pc_sel
-    case(opcode)
-        OP_JAL    : pc_sel = `PC_ALU;
-        OP_JALR   : pc_sel = `PC_ALU;
-        OP_BRANCH : pc_sel = brtaken ? `PC_ALU : `PC_PC4;
-        default   : pc_sel = `PC_PC4;
-    endcase
+casez(inst)
+//                   pc_sel reg_wen a_sel   b_sel   mem_rw    wb_sel  imm_sel  alu_sel   
+//                     |       |      |       |        |        |        |        |
+    `LUI    : cr = {`PC_PC4,  `Y , `A_X  , `B_IMM, `M_READ , `WB_ALU, `IMM_U, `ALU_PASSB};
+    `AUIPC  : cr = {`PC_PC4,  `Y , `A_PC , `B_IMM, `M_READ , `WB_ALU, `IMM_U, `ALU_ADD  };
 
-    // imm_sel
-    case(opcode)
-        OP_LUI    : imm_sel = `IMM_U;
-        OP_AUIPC  : imm_sel = `IMM_U;
-        OP_JAL    : imm_sel = `IMM_J;
-        OP_JALR   : imm_sel = `IMM_I;
-        OP_BRANCH : imm_sel = `IMM_B;
-        OP_LOAD   : imm_sel = `IMM_I;
-        OP_STORE  : imm_sel = `IMM_S;
-        OP_ALI    : imm_sel = `IMM_I;
-        OP_ALR    : imm_sel = `DTCARE;
-        default   : imm_sel = `DTCARE;
-    endcase
+    `JAL    : cr = {`PC_ALU,  `Y , `A_PC , `B_IMM, `M_READ , `WB_PC4, `IMM_J, `ALU_ADD  };
+    `JALR   : cr = {`PC_ALU,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_PC4, `IMM_I, `ALU_ADD  };
 
-    // reg_wen
-    case (opcode)
-        OP_LUI    : reg_wen = 1'b1;
-        OP_AUIPC  : reg_wen = 1'b1;
-        OP_JAL    : reg_wen = 1'b1;
-        OP_JALR   : reg_wen = 1'b1;
-        OP_BRANCH : reg_wen = 1'b0;
-        OP_LOAD   : reg_wen = 1'b1;
-        OP_STORE  : reg_wen = 1'b0;
-        OP_ALI    : reg_wen = 1'b1;
-        OP_ALR    : reg_wen = 1'b1;
-        default   : reg_wen = 1'b0;
-    endcase
+    `BEQ    : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
+    `BNE    : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
+    `BLT    : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
+    `BGE    : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
+    `BLTU   : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
+    `BGEU   : cr = { pc_br ,  `N , `A_PC , `B_IMM, `M_READ , `WB_X  , `IMM_B, `ALU_ADD  };
 
-    // a_sel
-    case(opcode)
-        OP_LUI    : a_sel = `DTCARE;
-        OP_AUIPC  : a_sel = `A_PC;
-        OP_JAL    : a_sel = `A_PC;
-        OP_JALR   : a_sel = `A_RS1;
-        OP_BRANCH : a_sel = `A_PC;
-        OP_LOAD   : a_sel = `A_RS1;
-        OP_STORE  : a_sel = `A_RS1;
-        OP_ALI    : a_sel = `A_RS1;
-        OP_ALR    : a_sel = `A_RS1;
-        default   : a_sel = `DTCARE;
-    endcase
+    `LB     : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_DM , `IMM_I, `ALU_ADD  };
+    `LH     : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_DM , `IMM_I, `ALU_ADD  };
+    `LW     : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_DM , `IMM_I, `ALU_ADD  };
+    `LBU    : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_DM , `IMM_I, `ALU_ADD  };
+    `LHU    : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_DM , `IMM_I, `ALU_ADD  };
 
-    // b_sel
-    case(opcode)
-        OP_LUI    : b_sel = `B_IMM;
-        OP_AUIPC  : b_sel = `B_IMM;
-        OP_JAL    : b_sel = `B_IMM;
-        OP_JALR   : b_sel = `B_IMM;
-        OP_BRANCH : b_sel = `B_IMM;
-        OP_LOAD   : b_sel = `B_IMM;
-        OP_STORE  : b_sel = `B_IMM;
-        OP_ALI    : b_sel = `B_IMM;
-        OP_ALR    : b_sel = `B_RS2;
-        default   : b_sel = `DTCARE;
-    endcase
+    `SB     : cr = {`PC_PC4,  `N , `A_RS1, `B_IMM, `M_WRITE, `WB_X  , `IMM_S, `ALU_ADD  };
+    `SH     : cr = {`PC_PC4,  `N , `A_RS1, `B_IMM, `M_WRITE, `WB_X  , `IMM_S, `ALU_ADD  };
+    `SW     : cr = {`PC_PC4,  `N , `A_RS1, `B_IMM, `M_WRITE, `WB_X  , `IMM_S, `ALU_ADD  };
 
-    // mem_rw
-    case (opcode)
-        OP_STORE  : mem_rw = `M_WRITE;
-        default   : mem_rw = `M_READ;
-    endcase
+    `ADDI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_ADD  };
+    `SLTI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_SLT  };
+    `SLTIU  : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_SLTU };
+    `XORI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_XOR  };
+    `ORI    : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_OR   };
+    `ANDI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_AND  };
+    `SLLI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_SLL  };
+    `SRLI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_SRL  };
+    `SRAI   : cr = {`PC_PC4,  `Y , `A_RS1, `B_IMM, `M_READ , `WB_ALU, `IMM_I, `ALU_SRA  };
 
-    // wb_sel
-    case(opcode)
-        OP_LUI    : wb_sel = `WB_ALU;
-        OP_AUIPC  : wb_sel = `WB_ALU;
-        OP_JAL    : wb_sel = `WB_PC4;
-        OP_JALR   : wb_sel = `WB_PC4;
-        OP_BRANCH : wb_sel = `DTCARE;
-        OP_LOAD   : wb_sel = `WB_DM;
-        OP_STORE  : wb_sel = `DTCARE;
-        OP_ALI    : wb_sel = `WB_ALU;
-        OP_ALR    : wb_sel = `WB_ALU;
-        default   : wb_sel = `DTCARE;
-    endcase
+    `ADD    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_ADD  };
+    `SUB    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SUB  };
+    `SLL    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SLL  };
+    `SLT    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SLT  };
+    `SLTU   : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SLTU };
+    `XOR    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_XOR  };
+    `SRL    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SRL  };
+    `SRA    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_SRA  };
+    `OR     : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_OR   };
+    `AND    : cr = {`PC_PC4,  `Y , `A_RS1, `B_RS2, `M_READ , `WB_ALU, `IMM_X, `ALU_AND  };
 
-    // alu_sel **
-    case (opcode)
-        OP_LUI    : alu_sel = `ALU_PASSB;
-        OP_AUIPC  : alu_sel = `ALU_ADD;
-        OP_JAL    : alu_sel = `ALU_ADD;
-        OP_JALR   : alu_sel = `ALU_ADD;
-        OP_BRANCH : alu_sel = `ALU_ADD;
-        OP_LOAD   : alu_sel = `ALU_ADD;
-        OP_STORE  : alu_sel = `ALU_ADD;
-        OP_ALI    : alu_sel = {funct3==3'b101 ? funct7[5] : 1'b0, funct3};
-        OP_ALR    : alu_sel = {funct7[5], funct3};
-        default   : alu_sel = `DTCARE;
-    endcase
-    // WARNING: IMPORTANT !!!
-    // To simplify the code and logic, the implementation of alu_sel take
-    // advantage of the specific encoding of arithmetic-logic instructions.
-    // If the definition of relevant macros (ALU_XXX) is changed, the
-    // control logic needs to be adjusted accordingly.
-
+    default : cr = {`PC_PC4,  `N , `A_X  , `B_X  , `M_READ , `WB_X  , `IMM_X, `ALU_X   };
+endcase
 end
 
 endmodule

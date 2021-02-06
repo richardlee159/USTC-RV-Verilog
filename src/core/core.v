@@ -54,9 +54,7 @@ wire [2:0] funct3 = inst[14:12];
 wire [6:0] funct7 = inst[31:25];
 
 control control_inst(
-    .opcode  (opcode   ),
-    .funct3  (funct3   ),
-    .funct7  (funct7   ),
+    .inst    (inst     ),
     .brtaken (br_taken ),
     .ctrls   (ctrls    )
 );
