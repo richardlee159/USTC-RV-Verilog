@@ -49,9 +49,9 @@ wire [31:0] alu_b;
 wire [31:0] alu_out;
 wire [31:0] mem_out;
 
-wire [6:0] opcode = inst[ 6: 0];
-wire [2:0] funct3 = inst[14:12];
-wire [6:0] funct7 = inst[31:25];
+wire [6:0] opcode = inst[`OP_LOC];
+wire [2:0] funct3 = inst[`F3_LOC];
+wire [6:0] funct7 = inst[`F7_LOC];
 
 control control_inst(
     .inst    (inst     ),
@@ -101,14 +101,14 @@ regfile #(
     .DATAW (32 )
 )
 regfile_inst(
-    .clk    (clk         ),
-    .wr_en  (reg_wen     ),
-    .addr_d (inst[11: 7] ),
-    .addr_a (inst[19:15] ),
-    .addr_b (inst[24:20] ),
-    .data_d (data_d      ),
-    .data_a (data_a      ),
-    .data_b (data_b      )
+    .clk    (clk            ),
+    .wr_en  (reg_wen        ),
+    .addr_d (inst[`RD_LOC]  ),
+    .addr_a (inst[`RS1_LOC] ),
+    .addr_b (inst[`RS2_LOC] ),
+    .data_d (data_d         ),
+    .data_a (data_a         ),
+    .data_b (data_b         )
 );
 
 immgen immgen_inst(
