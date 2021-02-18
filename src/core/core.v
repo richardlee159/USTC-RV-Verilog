@@ -6,18 +6,23 @@
 `include "src/core/alu.v"
 `include "src/core/brcomp.v"
 `include "src/core/immgen.v"
-`include "src/core/memory.v"
 `include "src/core/regfile.v"
 `include "src/core/register.v"
 `include "src/core/rom.v"
+`include "src/core/xbus_interface.v"
 
 module core #(
-    parameter PC_RSTVAL = 32'b0,
-    parameter IMEM_ADDRW = 12,
-    parameter DMEM_ADDRW = 12
+    parameter PC_RSTVAL = 32'h0000,
+    parameter IMEM_ADDRW = 14
 ) (
-    input clk,
-    input rst
+    input   clk,
+    input   rst,
+    output          xbus_as,
+    output          xbus_we,
+    output  [3:0]   xbus_be,
+    output  [31:0]  xbus_addr,
+    output  [31:0]  xbus_wdata,
+    input   [31:0]  xbus_rdata
 );
 
 // control signals
@@ -140,16 +145,19 @@ alu_inst(
     .out (alu_out )
 );
 
-memory #(
-    .ADDRW (DMEM_ADDRW )
-)
-dmem_inst(
-    .clk    (clk                     ),
-    .we     (mem_rw == `M_WRITE      ),
-    .funct3 (funct3                  ),
-    .addr   (alu_out[DMEM_ADDRW-1:0] ),
-    .wdata  (data_b                  ),
-    .rdata  (mem_out                 )
+wire mem_en = 1;
+assign xbus_as = mem_en;
+assign xbus_we = mem_rw == `M_WRITE;
+
+xbus_interface xbus_interface_inst(
+    .funct3     (funct3     ),
+    .addr       (alu_out    ),
+    .wdata      (data_b     ),
+    .rdata      (mem_out    ),
+    .xbus_be    (xbus_be    ),
+    .xbus_addr  (xbus_addr  ),
+    .xbus_wdata (xbus_wdata ),
+    .xbus_rdata (xbus_rdata )
 );
 
 assign data_d = (wb_sel == `WB_PC4) ? pc_plus_4 :
