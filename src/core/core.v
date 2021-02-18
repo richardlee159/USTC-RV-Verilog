@@ -8,12 +8,10 @@
 `include "src/core/immgen.v"
 `include "src/core/regfile.v"
 `include "src/core/register.v"
-`include "src/core/rom.v"
 `include "src/core/xbus_interface.v"
 
 module core #(
-    parameter PC_RSTVAL = 32'h0000,
-    parameter IMEM_ADDRW = 14
+    parameter PC_RSTVAL = 32'h0000
 ) (
     input   clk,
     input   rst,
@@ -58,6 +56,16 @@ wire [6:0] opcode = inst[`OP_LOC];
 wire [2:0] funct3 = inst[`F3_LOC];
 wire [6:0] funct7 = inst[`F7_LOC];
 
+parameter STATE_IF = 1'b0;
+parameter STATE_EX = 1'b1;
+reg state;
+always @(posedge clk) begin
+    if (rst)
+        state <= STATE_IF;
+    else
+        state <= ~state;
+end
+
 control control_inst(
     .inst    (inst     ),
     .brtaken (br_taken ),
@@ -71,35 +79,24 @@ register #(
 pc_inst(
     .clk   (clk     ),
     .rst   (rst     ),
-    .wr_en (1'b1    ),
+    .wr_en (state == STATE_EX ),
     .dnxt  (next_pc ),
     .qout  (pc      )
 );
 
-assign pc_plus_4 = pc + 4;
-
-rom #(
-    .ADDRW (IMEM_ADDRW-2 ),
-    .DATAW (32           )
+register #(
+    .DATAW     (32        ),
+    .RST_VALUE (32'b0     )
 )
-imem_inst(
-    .addr (pc[IMEM_ADDRW-1:2] ),
-    .data (inst               )
+ir_inst(
+    .clk   (clk   ),
+    .rst   (rst   ),
+    .wr_en (state == STATE_IF ),
+    .dnxt  (mem_out  ),
+    .qout  (inst  )
 );
 
-// memory 
-// #(
-//     .ADDRW (IMEM_ADDRW )
-// )
-// imem_inst(
-//     .clk    (clk                ),
-//     .we     (1'b0               ),
-//     .sign   (1'b0               ),
-//     .length (`ML_WORD           ),
-//     .addr   (pc[IMEM_ADDRW-1:0] ),
-//     .wdata  (32'b0              ),
-//     .rdata  (inst               )
-// );
+assign pc_plus_4 = pc + 4;
 
 regfile #(
     .ADDRW (5  ),
@@ -107,7 +104,7 @@ regfile #(
 )
 regfile_inst(
     .clk    (clk            ),
-    .wr_en  (reg_wen        ),
+    .wr_en  (reg_wen && (state == STATE_EX) ),
     .addr_d (inst[`RD_LOC]  ),
     .addr_a (inst[`RS1_LOC] ),
     .addr_b (inst[`RS2_LOC] ),
@@ -146,12 +143,14 @@ alu_inst(
 );
 
 wire mem_en = 1;
-assign xbus_as = mem_en;
-assign xbus_we = mem_rw == `M_WRITE;
+assign xbus_as      = (state == STATE_IF) ? 1 : mem_en;
+assign xbus_we      = (state == STATE_IF) ? 0 : (mem_rw == `M_WRITE);
+wire [2:0] mem_f3   = (state == STATE_IF) ? 3'b010 : funct3;
+wire [31:0] addr    = (state == STATE_IF) ? pc : alu_out;
 
 xbus_interface xbus_interface_inst(
-    .funct3     (funct3     ),
-    .addr       (alu_out    ),
+    .funct3     (mem_f3     ),
+    .addr       (addr       ),
     .wdata      (data_b     ),
     .rdata      (mem_out    ),
     .xbus_be    (xbus_be    ),

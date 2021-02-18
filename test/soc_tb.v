@@ -33,7 +33,7 @@ initial begin
     rst<=0;
 
     $readmemh("test/core/RISCV_RV32I_TEST/testA_InstructionStream.txt",
-                soc.core.imem_inst.mem);
+                soc.ram.mem);
 
     repeat(10000) @(posedge clk) begin
         if (soc.core.pc == 32'h22C8) begin
@@ -53,8 +53,6 @@ initial begin
     repeat(2) @(posedge clk);
     rst<=0;
 
-    $readmemh("test/core/RISCV_RV32I_TEST/testB_InstructionStream.txt",
-                soc.core.imem_inst.mem);
     $readmemh("test/core/RISCV_RV32I_TEST/testB_InstructionStream.txt",
                 soc.ram.mem);
 
@@ -77,7 +75,7 @@ initial begin
     rst<=0;
 
     $readmemh("test/core/RISCV_RV32I_TEST/testC_InstructionStream.txt",
-                soc.core.imem_inst.mem);
+                soc.ram.mem);
 
     repeat(10000) @(posedge clk) begin
         if (soc.core.pc == 32'h2D64) begin
