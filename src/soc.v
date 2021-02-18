@@ -1,5 +1,6 @@
 `include "src/core/core.v"
 `include "src/ram.v"
+`include "src/rom.v"
 `include "src/xbus_decoder.v"
 
 module soc (
@@ -34,7 +35,7 @@ always @(*) begin
 end
 
 core #(
-    .PC_RSTVAL  (32'h0000   )
+    .PC_RSTVAL  (32'h1000   )
 )
 core(
     .clk        (clk        ),
@@ -47,14 +48,23 @@ core(
     .xbus_rdata (xbus_rdata )
 );
 
-ram ram(
-    .clk        (clk        ),
+rom rom(
     .xbus_cs    (xbus_cs[0] ),
     .xbus_we    (xbus_we    ),
     .xbus_be    (xbus_be    ),
     .xbus_addr  (xbus_addr  ),
     .xbus_wdata (xbus_wdata ),
     .xbus_rdata (xbus_slave_rdata[0] )
+);
+
+ram ram(
+    .clk        (clk        ),
+    .xbus_cs    (xbus_cs[1] ),
+    .xbus_we    (xbus_we    ),
+    .xbus_be    (xbus_be    ),
+    .xbus_addr  (xbus_addr  ),
+    .xbus_wdata (xbus_wdata ),
+    .xbus_rdata (xbus_slave_rdata[1] )
 );
 
 endmodule

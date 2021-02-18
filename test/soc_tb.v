@@ -36,11 +36,11 @@ initial begin
                 soc.ram.mem);
 
     repeat(10000) @(posedge clk) begin
-        if (soc.core.pc == 32'h22C8) begin
+        if (soc.core.pc == 32'h800022C8) begin
             $display("### TestA FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h22CC) begin
+        else if (soc.core.pc == 32'h800022CC) begin
             $display("### TestA PASS! ###");
         end
     end
@@ -57,11 +57,11 @@ initial begin
                 soc.ram.mem);
 
     repeat(10000) @(posedge clk) begin
-        if (soc.core.pc == 32'h2A78) begin
+        if (soc.core.pc == 32'h80002A78) begin
             $display("### TestB FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h2A7C) begin
+        else if (soc.core.pc == 32'h80002A7C) begin
             $display("### TestB PASS! ###");
         end
     end
@@ -78,11 +78,11 @@ initial begin
                 soc.ram.mem);
 
     repeat(10000) @(posedge clk) begin
-        if (soc.core.pc == 32'h2D64) begin
+        if (soc.core.pc == 32'h80002D64) begin
             $display("### TestC FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h2D68) begin
+        else if (soc.core.pc == 32'h80002D68) begin
             $display("### TestC PASS! ###");
         end
     end
