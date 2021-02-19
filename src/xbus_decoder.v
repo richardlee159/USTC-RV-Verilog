@@ -13,6 +13,7 @@ always @(*) begin
     if (xbus_as) begin
         xbus_cs[0] = (xbus_addr >= 32'h00001000) && (xbus_addr < 32'h00001100);
         xbus_cs[1] = (xbus_addr >= 32'h80000000) && (xbus_addr < 32'h80010000);
+        xbus_cs[2] = (xbus_addr >= 32'h00010000) && (xbus_addr < 32'h00010004);
     end
 end
     
