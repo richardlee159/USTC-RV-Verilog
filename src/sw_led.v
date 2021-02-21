@@ -10,12 +10,15 @@ module sw_led (
     output  [7:0]       led
 );
 
+reg [7:0] sw_r;
+
 reg [7:0] led_r;
 assign led = led_r;
 
-assign xbus_rdata = {8'b0, sw, 8'b0, led_r};
+assign xbus_rdata = {8'b0, sw_r, 8'b0, led_r};
 
 always @(posedge clk) begin
+    sw_r <= sw;
     if (xbus_cs && xbus_we && xbus_be[0])
         led_r <= xbus_wdata[7:0];
 end
