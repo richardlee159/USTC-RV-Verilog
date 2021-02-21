@@ -1,4 +1,4 @@
-`include "src/core/macro.v"
+`include "src/core/define.vh"
 
 module immgen (
     input   [2:0]   sel,

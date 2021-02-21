@@ -1,4 +1,4 @@
-`include "src/core/macro.v"
+`include "src/core/define.vh"
 
 module alu #(
     parameter DATAW = 32

@@ -1,5 +1,5 @@
-`ifndef __MACRO_V
-`define __MACRO_V
+`ifndef __DEFINE_VH__
+`define __DEFINE_VH__
 
 `default_nettype none
 

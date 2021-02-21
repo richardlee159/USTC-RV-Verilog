@@ -1,4 +1,4 @@
-`include "src/core/macro.v"
+`include "src/core/define.vh"
 `include "src/core/format.vh"
 
 module control (
