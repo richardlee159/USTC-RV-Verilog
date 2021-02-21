@@ -1,4 +1,8 @@
+`ifdef IVERILOG
 `include "src/core/define.vh"
+`else
+`include "define.vh"
+`endif
 
 module xbus_interface (
     input   [2:0]       funct3,

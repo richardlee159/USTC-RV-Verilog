@@ -1,4 +1,8 @@
-`define NSLAVES 4
+`ifdef IVERILOG
+`include "src/config.vh"
+`else
+`include "config.vh"
+`endif
 
 module xbus_decoder (
     input                   xbus_as,

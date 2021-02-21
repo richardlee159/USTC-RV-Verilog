@@ -1,8 +1,13 @@
+`ifdef IVERILOG
+`include "src/config.vh"
 `include "src/core/core.v"
 `include "src/ram.v"
 `include "src/rom.v"
 `include "src/sw_led.v"
 `include "src/xbus_decoder.v"
+`else
+`include "config.vh"
+`endif
 
 module soc (
     input           clk,

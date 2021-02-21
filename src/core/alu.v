@@ -1,4 +1,8 @@
+`ifdef IVERILOG
 `include "src/core/define.vh"
+`else
+`include "define.vh"
+`endif
 
 module alu #(
     parameter DATAW = 32

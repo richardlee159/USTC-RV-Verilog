@@ -1,4 +1,8 @@
+`ifdef IVERILOG
 `include "src/core/define.vh"
+`else
+`include "define.vh"
+`endif
 
 module immgen (
     input   [2:0]   sel,

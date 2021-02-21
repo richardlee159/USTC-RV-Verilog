@@ -1,4 +1,8 @@
+`ifdef IVERILOG
 `include "src/core/define.vh"
+`else
+`include "define.vh"
+`endif
 
 module brcomp #(
     parameter DATAW = 32

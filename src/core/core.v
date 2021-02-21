@@ -1,14 +1,15 @@
 // RISC-V CPU Core, Single-Cycle
 // Support all RV32I unprivileged instructions (37 in total)
 
+`ifdef IVERILOG
 `include "src/core/control.v"
-
 `include "src/core/alu.v"
 `include "src/core/brcomp.v"
 `include "src/core/immgen.v"
 `include "src/core/regfile.v"
 `include "src/core/register.v"
 `include "src/core/xbus_interface.v"
+`endif
 
 module core #(
     parameter PC_RSTVAL = 32'h0000

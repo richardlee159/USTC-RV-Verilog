@@ -1,5 +1,10 @@
+`ifdef IVERILOG
 `include "src/core/define.vh"
 `include "src/core/format.vh"
+`else
+`include "define.vh"
+`include "format.vh"
+`endif
 
 module control (
     input   [31:0]  inst,
