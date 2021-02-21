@@ -15,7 +15,7 @@ module regfile #(
     output  [DATAW-1:0]  data_b         // read port B data
 );
 
-parameter REGCOUNT = 1 << ADDRW;        // number of registers
+localparam REGCOUNT = 1 << ADDRW;        // number of registers
 reg [DATAW-1:0] regs [1:REGCOUNT-1];
 
 // asynchronous read

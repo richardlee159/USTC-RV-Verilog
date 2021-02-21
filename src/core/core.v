@@ -56,8 +56,8 @@ wire [6:0] opcode = inst[`OP_LOC];
 wire [2:0] funct3 = inst[`F3_LOC];
 wire [6:0] funct7 = inst[`F7_LOC];
 
-parameter STATE_IF = 1'b0;
-parameter STATE_EX = 1'b1;
+localparam STATE_IF = 1'b0;
+localparam STATE_EX = 1'b1;
 reg state;
 always @(posedge clk) begin
     if (rst)
