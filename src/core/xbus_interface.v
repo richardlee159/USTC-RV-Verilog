@@ -20,13 +20,14 @@ wire [1:0] length = funct3[1:0];
 wire [1:0] byte_offset = addr[1:0];
 wire [4:0] bit_offset = byte_offset << 3;
 
-reg [3:0] xbus_be;
+reg [3:0] xbus_be_r;
+assign xbus_be = xbus_be_r;
 always @(*) begin
     case(length)
-        `ML_BYTE : xbus_be = 4'b0001 << byte_offset;
-        `ML_HALF : xbus_be = 4'b0011 << byte_offset;
-        `ML_WORD : xbus_be = 4'b1111;
-        default  : xbus_be = 4'b0000;
+        `ML_BYTE : xbus_be_r = 4'b0001 << byte_offset;
+        `ML_HALF : xbus_be_r = 4'b0011 << byte_offset;
+        `ML_WORD : xbus_be_r = 4'b1111;
+        default  : xbus_be_r = 4'b0000;
     endcase
 end
 
@@ -38,13 +39,14 @@ assign uh = (xbus_rdata >> bit_offset) & 32'h0000_FFFF;
 assign sb = {{24{ub[ 7]}}, ub[ 7:0]};
 assign sh = {{16{uh[15]}}, uh[15:0]};
 
-reg [31:0] rdata;
+reg [31:0] rdata_r;
+assign rdata = rdata_r;
 always @(*) begin
     case (length)
-        `ML_BYTE : rdata = (sign == `MS_SIGN) ? sb : ub;
-        `ML_HALF : rdata = (sign == `MS_SIGN) ? sh : uh;
-        `ML_WORD : rdata = xbus_rdata;
-        default  : rdata = 32'b0;
+        `ML_BYTE : rdata_r = (sign == `MS_SIGN) ? sb : ub;
+        `ML_HALF : rdata_r = (sign == `MS_SIGN) ? sh : uh;
+        `ML_WORD : rdata_r = xbus_rdata;
+        default  : rdata_r = 32'b0;
     endcase
 end
     

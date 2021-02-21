@@ -6,14 +6,15 @@ module xbus_decoder (
     output  [`NSLAVES-1:0]  xbus_cs
 );
 
-reg [`NSLAVES-1:0] xbus_cs;
+reg [`NSLAVES-1:0] xbus_cs_r;
+assign xbus_cs = xbus_cs_r;
 
 always @(*) begin
-    xbus_cs = `NSLAVES'b0;
+    xbus_cs_r = `NSLAVES'b0;
     if (xbus_as) begin
-        xbus_cs[0] = (xbus_addr >= 32'h00001000) && (xbus_addr < 32'h00001100);
-        xbus_cs[1] = (xbus_addr >= 32'h80000000) && (xbus_addr < 32'h80010000);
-        xbus_cs[2] = (xbus_addr >= 32'h00010000) && (xbus_addr < 32'h00010004);
+        xbus_cs_r[0] = (xbus_addr >= 32'h00001000) && (xbus_addr < 32'h00001100);
+        xbus_cs_r[1] = (xbus_addr >= 32'h80000000) && (xbus_addr < 32'h80010000);
+        xbus_cs_r[2] = (xbus_addr >= 32'h00010000) && (xbus_addr < 32'h00010004);
     end
 end
     
