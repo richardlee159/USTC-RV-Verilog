@@ -1,7 +1,9 @@
 `ifndef __DEFINE_VH__
 `define __DEFINE_VH__
 
+`ifdef IVERILOG
 `default_nettype none
+`endif
 
 // -------- Universal ---------
 `define     BYTEW       8
