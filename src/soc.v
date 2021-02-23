@@ -4,6 +4,7 @@
 `include "src/ram.v"
 `include "src/rom.v"
 `include "src/sw_led.v"
+`include "src/uart/uart.v"
 `include "src/xbus_decoder.v"
 `else
 `include "config.vh"
@@ -12,6 +13,8 @@
 module soc (
     input           clk,
     input           rst,
+    input           rx,
+    output          tx,
     input   [7:0]   sw,
     output  [7:0]   led
 );
@@ -75,14 +78,27 @@ ram ram(
     .xbus_rdata (xbus_slave_rdata[1] )
 );
 
-sw_led sw_led(
+uart uart(
     .clk        (clk        ),
+    .rst        (rst        ),
     .xbus_cs    (xbus_cs[2] ),
     .xbus_we    (xbus_we    ),
     .xbus_be    (xbus_be    ),
     .xbus_addr  (xbus_addr  ),
     .xbus_wdata (xbus_wdata ),
     .xbus_rdata (xbus_slave_rdata[2] ),
+    .rx         (rx         ),
+    .tx         (tx         )
+);
+
+sw_led sw_led(
+    .clk        (clk        ),
+    .xbus_cs    (xbus_cs[3] ),
+    .xbus_we    (xbus_we    ),
+    .xbus_be    (xbus_be    ),
+    .xbus_addr  (xbus_addr  ),
+    .xbus_wdata (xbus_wdata ),
+    .xbus_rdata (xbus_slave_rdata[3] ),
     .sw         (sw         ),
     .led        (led        )
 );
