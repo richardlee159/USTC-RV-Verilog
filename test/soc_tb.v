@@ -9,10 +9,18 @@
 module soc_tb;
 reg clk;
 reg rst;
+reg  rx;
+wire tx;
+reg  [7:0] sw;
+wire [7:0] led;
 
 soc soc(
     .clk (clk ),
-    .rst (rst )
+    .rst (rst ),
+    .rx  (rx  ),
+    .tx  (tx  ),
+    .sw  (sw  ),
+    .led (led )
 );
 
 localparam CLK_PERIOD = 10;
