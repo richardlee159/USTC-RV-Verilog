@@ -8,10 +8,12 @@ module rom (
     output  [31:0]      xbus_rdata
 );
 
-wire [0:63] [31:0] mem  = {
-    32'h800000b7,
-    32'h00008067
-};
+reg [31:0] mem [0:63];
+`ifdef IVERILOG
+initial $readmemh("src/rom.mem", mem);
+`else
+initial $readmemh("rom.mem", mem);
+`endif
 
 wire [5:0] addr = xbus_addr[7:2];
 
