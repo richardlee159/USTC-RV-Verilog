@@ -1,23 +1,33 @@
-module rom (
-    input               clk,
-    input               xbus_cs,
-    input               xbus_we,
-    input   [3:0]       xbus_be,
-    input   [31:0]      xbus_addr,
-    input   [31:0]      xbus_wdata,
-    output  [31:0]      xbus_rdata
+`ifdef IVERILOG
+`include "src/config.vh"
+`else
+`include "config.vh"
+`endif
+
+module rom #(
+    parameter DEPTH = 1024
+) (
+    input                   clk,
+    input                   xbus_cs,
+    input                   xbus_we,
+    input   [`XBYTEC-1:0]   xbus_be,
+    input   [`XADDRW-1:0]   xbus_addr,
+    input   [`XDATAW-1:0]   xbus_wdata,
+    output  [`XDATAW-1:0]   xbus_rdata
 );
 
-reg [31:0] mem [0:63];
+localparam ADDRW = $clog2(DEPTH);
+
+reg [`XDATAW-1:0] mem [0:DEPTH-1];
 `ifdef IVERILOG
 initial $readmemh("src/rom.mem", mem);
 `else
 initial $readmemh("rom.mem", mem);
 `endif
 
-wire [5:0] addr = xbus_addr[7:2];
+wire [ADDRW-1:0] addr = xbus_addr[ADDRW+1:2];
 
-reg [31:0] rdata;
+reg [`XDATAW-1:0] rdata;
 assign xbus_rdata = rdata;
 
 always @(posedge clk) begin

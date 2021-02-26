@@ -5,16 +5,16 @@
 `endif
 
 module xbus_decoder (
-    input                   xbus_as,
-    input   [31:0]          xbus_addr,
-    output  [`NSLAVES-1:0]  xbus_cs
+    input                       xbus_as,
+    input   [`XADDRW-1:0]       xbus_addr,
+    output  [`XSLAVE_CH-1:0]    xbus_cs
 );
 
-reg [`NSLAVES-1:0] xbus_cs_r;
+reg [`XSLAVE_CH-1:0] xbus_cs_r;
 assign xbus_cs = xbus_cs_r;
 
 always @(*) begin
-    xbus_cs_r = `NSLAVES'b0;
+    xbus_cs_r = `XSLAVE_CH'b0;
     if (xbus_as) begin
         xbus_cs_r[0] = (xbus_addr >= 32'h00001000) && (xbus_addr < 32'h00001100);
         xbus_cs_r[1] = (xbus_addr >= 32'h80000000) && (xbus_addr < 32'h80010000);

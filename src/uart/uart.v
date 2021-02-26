@@ -1,19 +1,22 @@
 `ifdef IVERILOG
+`include "src/config.vh"
 `include "src/uart/uart_rx.v"
 `include "src/uart/uart_tx.v"
+`else
+`include "config.vh"
 `endif
 
 module uart (
-    input               clk,
-    input               rst,
-    input               xbus_cs,
-    input               xbus_we,
-    input   [3:0]       xbus_be,
-    input   [31:0]      xbus_addr,
-    input   [31:0]      xbus_wdata,
-    output  [31:0]      xbus_rdata,
-    input               rx,
-    output              tx
+    input                   clk,
+    input                   rst,
+    input                   xbus_cs,
+    input                   xbus_we,
+    input   [`XBYTEC-1:0]   xbus_be,
+    input   [`XADDRW-1:0]   xbus_addr,
+    input   [`XDATAW-1:0]   xbus_wdata,
+    output  [`XDATAW-1:0]   xbus_rdata,
+    input                   rx,
+    output                  tx
 );
 
 wire            tx_start;
@@ -54,7 +57,7 @@ always @(posedge clk or posedge rst) begin
         rx_ready <= 1'b0;
 end
 
-reg [31:0] rdata;
+reg [`XDATAW-1:0] rdata;
 assign xbus_rdata = rdata;
 always @(*) begin
     case (addr)

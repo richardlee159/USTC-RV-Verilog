@@ -1,21 +1,29 @@
-`define BYTEW 8
+`ifdef IVERILOG
+`include "src/config.vh"
+`else
+`include "config.vh"
+`endif
 
-module ram (
-    input               clk,
-    input               xbus_cs,
-    input               xbus_we,
-    input   [3:0]       xbus_be,
-    input   [31:0]      xbus_addr,
-    input   [31:0]      xbus_wdata,
-    output  [31:0]      xbus_rdata
+module ram #(
+    parameter DEPTH = 1024
+) (
+    input                   clk,
+    input                   xbus_cs,
+    input                   xbus_we,
+    input   [`XBYTEC-1:0]   xbus_be,
+    input   [`XADDRW-1:0]   xbus_addr,
+    input   [`XDATAW-1:0]   xbus_wdata,
+    output  [`XDATAW-1:0]   xbus_rdata
 );
 
-reg [31:0] mem [0:4095];
+localparam ADDRW = $clog2(DEPTH);
 
-wire [11:0] addr = xbus_addr[13:2];
+reg [`XDATAW-1:0] mem [0:DEPTH-1];
+
+wire [ADDRW-1:0] addr = xbus_addr[ADDRW+1:2];
 
 // synchronous read
-reg [31:0] rdata;
+reg [`XDATAW-1:0] rdata;
 assign xbus_rdata = rdata;
 always @(posedge clk) begin
     if (xbus_cs)
@@ -25,7 +33,7 @@ end
 // synchronous write
 genvar i;
 generate
-    for (i = 0; i < 4; i = i + 1) begin
+    for (i = 0; i < `XBYTEC; i = i + 1) begin
         always @(posedge clk) begin
             if (xbus_cs && xbus_we && xbus_be[i])
                 mem[addr][(i+1)*`BYTEW-1:i*`BYTEW]

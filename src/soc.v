@@ -23,15 +23,15 @@ reg core_clk;
 initial core_clk <= 1'b0;
 always @(posedge clk) core_clk <= ~core_clk;
 
-wire        xbus_as;
-wire        xbus_we;
-wire [3:0]  xbus_be;
-wire [31:0] xbus_addr;
-wire [31:0] xbus_wdata;
-reg  [31:0] xbus_rdata;
-wire [31:0] xbus_slave_rdata [0:3];
+wire                    xbus_as;
+wire                    xbus_we;
+wire [`XBYTEC-1:0]      xbus_be;
+wire [`XADDRW-1:0]      xbus_addr;
+wire [`XDATAW-1:0]      xbus_wdata;
+reg  [`XDATAW-1:0]      xbus_rdata;
+wire [`XDATAW-1:0]      xbus_slave_rdata [0:`XSLAVE_CH-1];
 
-wire [`NSLAVES-1:0]xbus_cs;
+wire [`XSLAVE_CH-1:0]   xbus_cs;
 
 xbus_decoder xbus_decoder(
     .xbus_as   (xbus_as   ),
@@ -41,10 +41,10 @@ xbus_decoder xbus_decoder(
 
 always @(*) begin
     case (xbus_cs)
-        `NSLAVES'b0001: xbus_rdata = xbus_slave_rdata[0];
-        `NSLAVES'b0010: xbus_rdata = xbus_slave_rdata[1];
-        `NSLAVES'b0100: xbus_rdata = xbus_slave_rdata[2];
-        `NSLAVES'b1000: xbus_rdata = xbus_slave_rdata[3];
+        `XSLAVE_CH'b0001: xbus_rdata = xbus_slave_rdata[0];
+        `XSLAVE_CH'b0010: xbus_rdata = xbus_slave_rdata[1];
+        `XSLAVE_CH'b0100: xbus_rdata = xbus_slave_rdata[2];
+        `XSLAVE_CH'b1000: xbus_rdata = xbus_slave_rdata[3];
         default: xbus_rdata = 0;
     endcase
 end
@@ -63,7 +63,10 @@ core(
     .xbus_rdata (xbus_rdata )
 );
 
-rom rom(
+rom #(
+    .DEPTH      (64         )
+)
+rom(
     .clk        (clk        ),
     .xbus_cs    (xbus_cs[0] ),
     .xbus_we    (xbus_we    ),
@@ -73,7 +76,10 @@ rom rom(
     .xbus_rdata (xbus_slave_rdata[0] )
 );
 
-ram ram(
+ram #(
+    .DEPTH      (4096       )
+)
+ram(
     .clk        (clk        ),
     .xbus_cs    (xbus_cs[1] ),
     .xbus_we    (xbus_we    ),

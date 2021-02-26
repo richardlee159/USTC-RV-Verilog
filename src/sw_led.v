@@ -1,13 +1,19 @@
+`ifdef IVERILOG
+`include "src/config.vh"
+`else
+`include "config.vh"
+`endif
+
 module sw_led (
-    input               clk,
-    input               xbus_cs,
-    input               xbus_we,
-    input   [3:0]       xbus_be,
-    input   [31:0]      xbus_addr,
-    input   [31:0]      xbus_wdata,
-    output  [31:0]      xbus_rdata,
-    input   [7:0]       sw,
-    output  [7:0]       led
+    input                   clk,
+    input                   xbus_cs,
+    input                   xbus_we,
+    input   [`XBYTEC-1:0]   xbus_be,
+    input   [`XADDRW-1:0]   xbus_addr,
+    input   [`XDATAW-1:0]   xbus_wdata,
+    output  [`XDATAW-1:0]   xbus_rdata,
+    input   [7:0]           sw,
+    output  [7:0]           led
 );
 
 reg [7:0] sw_r;
