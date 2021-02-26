@@ -1,4 +1,3 @@
-`timescale 1ns/1ps
 
 `include "src/soc.v"
 
@@ -43,15 +42,14 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testA_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(20000) @(posedge clk) begin
+    while (soc.core.pc != 32'h800022CC) begin
+        @(posedge clk);
         if (soc.core.pc == 32'h800022C8) begin
             $display("### TestA FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h800022CC) begin
-            $display("### TestA PASS! ###");
-        end
     end
+    $display("### TestA PASS! ###");
 
 `endif
 `ifdef TEST_B
@@ -64,15 +62,14 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testB_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(20000) @(posedge clk) begin
+    while (soc.core.pc != 32'h80002A7C) begin
+        @(posedge clk);
         if (soc.core.pc == 32'h80002A78) begin
             $display("### TestB FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h80002A7C) begin
-            $display("### TestB PASS! ###");
-        end
     end
+    $display("### TestB PASS! ###");
 
 `endif
 `ifdef TEST_C
@@ -85,15 +82,14 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testC_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(20000) @(posedge clk) begin
+    while (soc.core.pc != 32'h80002D68) begin
+        @(posedge clk);
         if (soc.core.pc == 32'h80002D64) begin
             $display("### TestC FAIL! ###");
             $finish;
         end
-        else if (soc.core.pc == 32'h80002D68) begin
-            $display("### TestC PASS! ###");
-        end
     end
+    $display("### TestC PASS! ###");
 
 `endif
 
