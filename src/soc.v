@@ -28,7 +28,7 @@ wire                    xbus_we;
 wire [`XBYTEC-1:0]      xbus_be;
 wire [`XADDRW-1:0]      xbus_addr;
 wire [`XDATAW-1:0]      xbus_wdata;
-reg  [`XDATAW-1:0]      xbus_rdata;
+wire [`XDATAW-1:0]      xbus_rdata;
 wire [`XDATAW-1:0]      xbus_slave_rdata [0:`XSLAVE_CH-1];
 
 wire [`XSLAVE_CH-1:0]   xbus_cs;
@@ -39,15 +39,10 @@ xbus_decoder xbus_decoder(
     .xbus_cs   (xbus_cs   )
 );
 
-always @(*) begin
-    case (xbus_cs)
-        `XSLAVE_CH'b0001: xbus_rdata = xbus_slave_rdata[0];
-        `XSLAVE_CH'b0010: xbus_rdata = xbus_slave_rdata[1];
-        `XSLAVE_CH'b0100: xbus_rdata = xbus_slave_rdata[2];
-        `XSLAVE_CH'b1000: xbus_rdata = xbus_slave_rdata[3];
-        default: xbus_rdata = 0;
-    endcase
-end
+assign xbus_rdata = {`XDATAW{xbus_cs[0]}} & xbus_slave_rdata[0]
+                  | {`XDATAW{xbus_cs[1]}} & xbus_slave_rdata[1]
+                  | {`XDATAW{xbus_cs[2]}} & xbus_slave_rdata[2]
+                  | {`XDATAW{xbus_cs[3]}} & xbus_slave_rdata[3];
 
 core #(
     .PC_RSTVAL  (32'h1000   )
