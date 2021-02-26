@@ -19,6 +19,10 @@ module soc (
     output  [7:0]   led
 );
 
+reg core_clk;
+initial core_clk <= 1'b0;
+always @(posedge clk) core_clk <= ~core_clk;
+
 wire        xbus_as;
 wire        xbus_we;
 wire [3:0]  xbus_be;
@@ -49,7 +53,7 @@ core #(
     .PC_RSTVAL  (32'h1000   )
 )
 core(
-    .clk        (clk        ),
+    .clk        (core_clk   ),
     .rst        (rst        ),
     .xbus_as    (xbus_as    ),
     .xbus_we    (xbus_we    ),
@@ -60,6 +64,7 @@ core(
 );
 
 rom rom(
+    .clk        (clk        ),
     .xbus_cs    (xbus_cs[0] ),
     .xbus_we    (xbus_we    ),
     .xbus_be    (xbus_be    ),

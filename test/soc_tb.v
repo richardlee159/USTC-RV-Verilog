@@ -43,7 +43,7 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testA_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(10000) @(posedge clk) begin
+    repeat(20000) @(posedge clk) begin
         if (soc.core.pc == 32'h800022C8) begin
             $display("### TestA FAIL! ###");
             $finish;
@@ -64,7 +64,7 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testB_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(10000) @(posedge clk) begin
+    repeat(20000) @(posedge clk) begin
         if (soc.core.pc == 32'h80002A78) begin
             $display("### TestB FAIL! ###");
             $finish;
@@ -85,7 +85,7 @@ initial begin
     $readmemh("test/core/RISCV_RV32I_TEST/testC_InstructionStream.txt",
                 soc.ram.mem);
 
-    repeat(10000) @(posedge clk) begin
+    repeat(20000) @(posedge clk) begin
         if (soc.core.pc == 32'h80002D64) begin
             $display("### TestC FAIL! ###");
             $finish;
